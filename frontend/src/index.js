@@ -1,0 +1,1 @@
+import AppWrapper from "./components/App";
