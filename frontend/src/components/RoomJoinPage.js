@@ -13,7 +13,7 @@ import RadioGroup from "@material-ui/core/RadioGroup"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 
-function RoomJoinPage() {
+function RoomJoinPage({navigation}) {
     const navigate = useNavigate()
     const [backData,setBackData]=useState({
         roomCode:"",
@@ -36,7 +36,7 @@ function RoomJoinPage() {
         };
         fetch('/join-room', feedBack).then((response) => {
             if (response.ok) {
-                navigate(`/room/${backData.roomCode}`)
+                navigation(`/room/${backData.roomCode}`)
             }
             else {
                 setBackData(data=> ({error: "Room not found."}))

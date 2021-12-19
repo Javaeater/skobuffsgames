@@ -3,6 +3,7 @@ import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import RN from "./Room";
     import {BrowserRouter as Router, Routes, Route, Link, Redirect} from "react-router-dom";
+import FinalRoom from "./FinalRoom";
 
 export default class HomePage extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ export default class HomePage extends Component {
                     <Route path='/join' element={<RoomJoinPage />}/>
                     <Route path='/create' element={<CreateRoomPage />}/>
                     <Route path="/room/:roomCode" element={<RN />} />
+                    <Route path="/room/:roomCode/done" element={<FinalRoom />} />
                 </Routes>
             </Router>
         );

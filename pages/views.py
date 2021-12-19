@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from .models import Room
 from .serializers import RoomSerializer
 from .serializers import CreateRoomSerializer
+from.serializers import FinalRoomSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from random import shuffle
@@ -15,7 +16,6 @@ from itertools import permutations
 class RoomView(generics.ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-
 
 class GetRoom(APIView):
     serializer_class = RoomSerializer
@@ -31,6 +31,44 @@ class GetRoom(APIView):
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Bad CODE': 'Invalid Room Code.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad Request': 'Code param not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+class FinalRoom(APIView):
+    serializer_class = FinalRoomSerializer
+    lookup_url_kwarg = 'code'
+
+    def post(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            guest_can_play = serializer.data.get('guest_can_play')
+            hidden_num = serializer.data.get('hidden_num')
+            ana_word = serializer.data.get('ana_word')
+            is_host = self.request.session.session_key
+            all_words = serializer.data.get('all_words')
+            points = serializer.data.get('points')
+            final_words = serializer.data.get('final_words')
+            queryset = Room.objects.filter(is_host=is_host)
+            if queryset.exists():
+                room = queryset[0]
+                room.guest_can_play = guest_can_play
+                room.hidden_num = hidden_num
+                room.ana_word = ana_word
+                room.all_words = all_words
+                room.points = points
+                room.final_words = final_words
+                room.save(update_fields=['guest_can_play', 'hidden_num', 'ana_word', 'all_words', 'points',
+                                         'final_words'])
+                self.request.session['room_code'] = room.code
+                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+            else:
+                room = Room(is_host=is_host, guest_can_play=guest_can_play, hidden_num=hidden_num, ana_word=ana_word,
+                            all_words=all_words, points=points, final_words=final_words)
+                room.save()
+                self.request.session['room_code'] = room.code
+                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+        return Response({'Bad Request': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class JoinRoom(APIView):
@@ -135,6 +173,7 @@ class CreateRoomView(APIView):
             ana_word = self.createroom()
             is_host = self.request.session.session_key
             all_words = self.allWords(ana_word)
+            points = serializer.data.get('points')
             queryset = Room.objects.filter(is_host=is_host)
             if queryset.exists():
                 room = queryset[0]
@@ -142,13 +181,40 @@ class CreateRoomView(APIView):
                 room.hidden_num = hidden_num
                 room.ana_word = ana_word
                 room.all_words = all_words
-                room.save(update_fields=['guest_can_play', 'hidden_num', 'ana_word', 'all_words'])
+                room.points = points
+                room.save(update_fields=['guest_can_play', 'hidden_num', 'ana_word', 'all_words', 'points'])
                 self.request.session['room_code'] = room.code
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
             else:
-                room = Room(is_host=is_host, guest_can_play=guest_can_play, hidden_num=hidden_num)
+                room = Room(is_host=is_host, guest_can_play=guest_can_play, hidden_num=hidden_num, ana_word=ana_word, all_words=all_words, points=points)
                 room.save()
                 self.request.session['room_code'] = room.code
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ExitRoom(APIView):
+    def post(self, request, format= None):
+        if 'room_code' in self.request.session:
+            code = self.request.session.pop('room_code')
+            host_id = self.request.session.session_key
+            room_results = Room.objects.filter(is_host=host_id)
+            if len(room_results) > 0:
+                room = room_results[0]
+                room.delete()
+        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
+
+
+class DeleteRoom(APIView):
+    serializer_class = RoomSerializer
+    lookup_url_kwarg = 'code'
+
+    def get(self, request, format= None):
+        code = request.GET.get(self.lookup_url_kwarg)
+        if code != None:
+            room = Room.objects.filter(code=code)
+            if len(room) > 0:
+                room.delete()
+                return Response('deleted', status=status.HTTP_200_OK)
+            return Response({'Bad CODE': 'Invalid Room Code.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Code param not found in request'}, status=status.HTTP_400_BAD_REQUEST)

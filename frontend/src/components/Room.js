@@ -1,24 +1,118 @@
-import React, {Component} from "react";
-import {Link, useParams} from "react-router-dom";
+import React, {Component, useEffect} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import { useState } from 'react';
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import { useTimer } from 'react-timer-hook';
 
 
 const RN = () => {
     let params = useParams()
     let defhiddenNum = 2
-
+    const navigate = useNavigate()
+    const [backData3, setBackData3] = useState({
+        points: 0,
+        words: []
+    })
+    const [backData4,setBackData4]=useState({
+        roomCode: params.roomCode,
+        error: ""
+    })
 
     const [backData,setBackData]= useState({
         guestCanPlay: true,
         hiddenNumm: 1,
         isHost: false,
         anaWord: "trgt",
-        allwrds: "no"
+        allWrds: "no"
     })
+
+    const checkLen =()=> {
+        if (backData3.words.length < 1) {
+            console.log("skeee")
+            setBackData3({
+                words : backData3.words.concat(["oof", "no", "words", "that's", "rough"]),
+                points: backData3.points})
+        }
+    }
+
+    const roomButtonPressed =async()=>{
+        checkLen()
+        const feedBack = await fetch("/final-room",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                final_words : backData3.words.toString(),
+                all_words: backData.allWrds,
+                guest_can_play: backData.guestCanPlay,
+                hidden_num: backData.hiddenNumm,
+                ana_word: backData.anaWord,
+                points: backData3.points
+            })
+        })
+        const JsonFeedBack = await feedBack.json()
+        console.log(JsonFeedBack)
+        navigate("/room/" + JsonFeedBack.code + "/done")
+    }
+
+        // initialize timeLeft with the seconds prop
+    const [timeLeft, setTimeLeft] = useState(5);
+
+        useEffect(() => {
+            // exit early when we reach 0
+            if (!timeLeft) return;
+
+            // save intervalId to clear the interval when the
+            // component re-renders
+            const intervalId = setInterval(() => {
+                setTimeLeft(timeLeft - 1);
+            }, 1000);
+
+            // clear interval on re-render to avoid memory leaks
+            return () => clearInterval(intervalId);
+            // add timeLeft as a dependency to re-rerun the effect
+            // when we update it
+        }, [timeLeft]);
+        if(timeLeft == 0) {
+            roomButtonPressed()
+        }
+
+    const handelWordPress= ()=> {
+        let word = backData.allWrds.split(',')
+            for(let i = 0; i < word.length; i++) {
+                let bl = backData3.words.includes(word[i])
+                console.log(word[i])
+                if (backData2.filWord.replace(/\s/g, '') == word[i] && bl == false) {
+                    let pWord = word[i].length
+                    switch (pWord){
+                        case(3):
+                            setBackData3({points: backData3.points + 150, words: backData3.words.concat(word[i])})
+                            break;
+                        case(4):
+                            setBackData3({points: backData3.points + 300, words: backData3.words.concat(word[i])})
+                            break;
+                        case(5):
+                            setBackData3({points: backData3.points + 600, words: backData3.words.concat(word[i])})
+                            break;
+                        case(6):
+                            setBackData3({points: backData3.points + 1200, words: backData3.words.concat(word[i])})
+                            break;
+                        case(7):
+                            setBackData3({points: backData3.points + 2400, words: backData3.words.concat(word[i])})
+                            break;
+                        default:
+                            setBackData3({points: backData3.points, words: backData3.words})
+                            break;
+                    }
+                }
+            }
+        console.log(backData3.words)
+    }
+
     const getRoomDetails=async()=> {
         fetch("/get-room" + "?code=" + params.roomCode).then((response) => response.json()).then(data => {
             setBackData({
@@ -26,7 +120,8 @@ const RN = () => {
                 hiddenNumm: data.hidden_num,
                 isHost: data.is_host,
                 anaWord: data.ana_word,
-                allwrds: data.all_words
+                allWrds: data.all_words,
+
             })
             checkDetails()
         })
@@ -48,7 +143,7 @@ const RN = () => {
         if (posi == 1) {
             if(backData2.actWord.charAt(0) != " " ){
                 setBackData2({actWord: backData2.actWord.replace(backData2.actWord.charAt(0), " "), filWord: backData2.filWord.replace(" ", backData2.actWord.charAt(0))})
-                console.log(backData.allwrds)
+                console.log(backData.allWrds)
             }
             else {
                 setBackData2({actWord: backData2.actWord, filWord: backData2.filWord})
@@ -170,17 +265,17 @@ const RN = () => {
     return (<Grid container spacing={1} className="center">
         <Grid item xs={12} align="center">
             <Typography variant="h4" component="h4">
-                Anagrams
+                {timeLeft}
             </Typography>
         </Grid>
         <Grid item xs={12} align="center">
             <Typography variant="h4" component="h4">
-                {backData.anaWord}
+                {backData3.points}
             </Typography>
         </Grid>
         <Grid item xs={12} align="center">
             <Typography variant="h4" component="h4">
-                {backData2.actWord}
+                {backData2.filWord}
             </Typography>
         </Grid>
         <Grid item xs={12} align="center">
@@ -230,7 +325,7 @@ const RN = () => {
             </Button>
         </Grid>
         <Grid item xs={12} align="center">
-            <Button variant="contained" color="default" onClick >
+            <Button variant="contained" color="default" onClick={handelWordPress}>
                 Send
             </Button>
         </Grid>

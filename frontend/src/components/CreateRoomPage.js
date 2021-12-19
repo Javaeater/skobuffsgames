@@ -52,13 +52,15 @@ function CreateRoomPage() {
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
+                all_words: backData.allWords,
                 guest_can_play: backData.guestCanPlay,
                 hidden_num: backData.hiddenNumm,
                 ana_word: backData.anaWord,
-                all_words: backData.allWords
+                points: 100
             })
         })
         const JsonFeedBack = await feedBack.json()
+        console.log(JsonFeedBack)
         navigate("/room/" + JsonFeedBack.code)
     }
 
