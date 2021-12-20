@@ -49,9 +49,9 @@ function HomePage (){
 
 
     const renderHomePage=()=>{
-        return (<Grid container spacing={1} className="center">
+        return (<Grid container spacing={1}>
             <Grid item xs={12} align="center">
-                <Button className={zooted.buttonStep} to='/anagrams' component={Link}> Play Anagrams</Button>
+                <Button className={zooted.buttonStep} to='/anagrams' component={Link} fullWidth={true}> Play Anagrams</Button>
             </Grid>
         </Grid>);
     };

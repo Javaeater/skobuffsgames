@@ -1,0 +1,1 @@
+web: gunicorn skobuffs_project.wsgi --log-file -
