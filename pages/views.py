@@ -8,8 +8,8 @@ from.serializers import FinalRoomSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from random import shuffle
+from english_words import english_words_set
 from random import seed
-import enchant
 from random import randint
 from itertools import permutations
 from django.http import JsonResponse
@@ -111,7 +111,8 @@ class CreateRoomView(APIView):
     def allWords(self, wd):
 
         fl = []
-        fw = ''
+        fz = []
+        fw = ""
         perm = permutations(wd, 3)
         fl3 = (list(perm))
         perm = permutations(wd, 4)
@@ -122,45 +123,24 @@ class CreateRoomView(APIView):
         fl6 = (list(perm))
         perm = permutations(wd, 7)
         fl7 = (list(perm))
-        d = enchant.Dict("en_US")
+        spell = SpellChecker()
         for i in fl3:
-            wrds = ""
-            for j in i:
-                wrds += j
-            if(d.check(wrds)):
-                fw += wrds
-                fw += ","
-
+            fl.append(i)
         for i in fl4:
-            wrds = ""
-            for j in i:
-                wrds += j
-            if (d.check(wrds)):
-                fw += wrds
-                fw += ","
+            fl.append(i)
         for i in fl5:
-            wrds = ""
-            for j in i:
-                wrds += j
-            if (d.check(wrds)):
-                fw += wrds
-                fw += ","
+            fl.append(i)
         for i in fl6:
-            wrds = ""
-            for j in i:
-                wrds += j
-            if (d.check(wrds)):
-                fw += wrds
-                fw += ","
+            fl.append(i)
         for i in fl7:
-            wrds = ""
-            for j in i:
-                wrds += j
-            if (d.check(wrds)):
-                fw += wrds
-                fw += ","
-
-            #fw.append(wrds)
+            fl.append(i)
+        for i in fl:
+            fz.append(i)
+        fz = [''.join(i) for i in fl]
+        for i in fz:
+            if i in english_words_set:
+                fw += i
+                fw+= ','
         return(fw)
 
     def post(self, request, format=None):
@@ -191,7 +171,7 @@ class CreateRoomView(APIView):
                 room.save()
                 self.request.session['room_code'] = room.code
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
-        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ExitRoom(APIView):

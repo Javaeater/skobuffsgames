@@ -60,7 +60,7 @@ function CreateRoomPage() {
             })
         })
         const JsonFeedBack = await feedBack.json()
-        console.log(JsonFeedBack)
+        console.log(JsonFeedBack.all_words)
         navigate("/room/" + JsonFeedBack.code)
     }
 
