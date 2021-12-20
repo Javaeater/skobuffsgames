@@ -60,7 +60,7 @@ const RN = () => {
     }
 
         // initialize timeLeft with the seconds prop
-    const [timeLeft, setTimeLeft] = useState(5);
+    const [timeLeft, setTimeLeft] = useState(60);
 
         useEffect(() => {
             // exit early when we reach 0

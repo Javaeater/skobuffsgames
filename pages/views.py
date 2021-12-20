@@ -12,6 +12,7 @@ from random import seed
 import enchant
 from random import randint
 from itertools import permutations
+from django.http import JsonResponse
 
 class RoomView(generics.ListAPIView):
     queryset = Room.objects.all()
@@ -218,3 +219,14 @@ class DeleteRoom(APIView):
                 return Response('deleted', status=status.HTTP_200_OK)
             return Response({'Bad CODE': 'Invalid Room Code.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad Request': 'Code param not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserInRoom(APIView):
+
+    def get(self,request, format= None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        data ={
+            'code': self.request.session.get('room_code')
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
