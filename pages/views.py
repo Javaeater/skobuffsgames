@@ -123,7 +123,6 @@ class CreateRoomView(APIView):
         fl6 = (list(perm))
         perm = permutations(wd, 7)
         fl7 = (list(perm))
-        spell = SpellChecker()
         for i in fl3:
             fl.append(i)
         for i in fl4:
