@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
-import {Grid, Button, ButtonGroup} from "@material-ui/core";
+import {Grid, Button, ButtonGroup, createTheme} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core";
 import RN from "./Room";
 import {BrowserRouter as Router, Routes, Route, Link} from "react-router-dom";
@@ -19,6 +19,7 @@ const useStyles = makeStyles({
                 //backgroundImage: 'linear-gradient(#e66465, #9198e5)',
                 backgroundImage: 'url("static/images/anaphoto3.jpg")',
                 color:'#5FBDB3',
+                fontFamily: ['"Poppins", sans-serif'],
                 fontSize: screen.width/10
             }
         });

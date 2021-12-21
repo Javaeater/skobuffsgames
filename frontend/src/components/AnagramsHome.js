@@ -4,32 +4,42 @@ import {Button} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core";
 import {Link} from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
+import {createTheme} from "@material-ui/core";
+import {ThemeProvider} from "@material-ui/core";
 const useStyles = makeStyles({
     buttonStep2: {
-        width: '100px',
-        height: '50px',
-        backgroundImage: 'linear-gradient(90deg, rgba(21,104,110,0.7066176812521884) 37%, rgba(20,255,98,0.6814075972185749) 57%)'
+        width: screen.width/2,
+        height: screen.height/1.123,
+        backgroundImage: 'linear-gradient(to bottom, #3772c9, #0094db, #00adb9, #00bd71, #8bc20f)'
 ,
         color:'white',
-        fontSize: '15px'
+        fontSize: screen.width/20
     },
     buttonStep3: {
-        width: '100px',
-        height: '50px',
-        backgroundImage: 'linear-gradient(90deg, rgba(45,21,110,0.7066176812521884) 37%, rgba(255,20,104,0.6814075972185749) 57%)',
+        width: screen.width/2,
+        height: screen.height/1.123,
+        backgroundImage: 'linear-gradient(to top, #272f3e, #423863, #7b3272, #b71563, #e00b36)',
         color:'white',
-        fontSize: '15px'
+        fontSize: screen.width/20
     }
 
 });
 
 function anagramsHome(){
     const classes = useStyles()
-    return (<Grid container spacing={1} className="center">
-            <Grid item xs={12} align="center">
-                <Typography variant="h3" compact="h3">
+    const themex = createTheme({
+        typography: {
+            fontFamily: ["Poppins", 'sans-serif'].join(',')
+
+        }
+    })
+    return (<Grid container spacing={1}>
+            <Grid style={{color:"rgba(14, 192, 251, 0.43)", fontSize: screen.width/18}} item xs={12} align="center">
+                <ThemeProvider theme={themex}>
+                <Typography variant="h2">
                     Anagrams
                 </Typography>
+                </ThemeProvider>
             </Grid>
             <Grid item xs={12} align="center">
                 <ButtonGroup disableElevation varient="contained" color="primary">

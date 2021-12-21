@@ -11,6 +11,8 @@ import { Link } from "react-router-dom"
 import Radio from "@material-ui/core/Radio"
 import RadioGroup from "@material-ui/core/RadioGroup"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import {createTheme} from "@material-ui/core";
+import {ThemeProvider} from "@material-ui/core";
 
 
 function RoomJoinPage({navigation}) {
@@ -36,7 +38,7 @@ function RoomJoinPage({navigation}) {
         };
         fetch('/join-room', feedBack).then((response) => {
             if (response.ok) {
-                navigation(`/room/${backData.roomCode}`)
+                navigate(`/room/${backData.roomCode}`)
             }
             else {
                 setBackData(data=> ({error: "Room not found."}))
@@ -45,12 +47,23 @@ function RoomJoinPage({navigation}) {
             console.log(error)
         })
     }
+
+    const themex = createTheme({
+        typography: {
+            fontFamily: ["Poppins", 'sans-serif'].join(','),
+            fontSize: screen.width/35
+
+        }
+    })
+
     return (
-            <Grid container spacing={1} className="center">
+            <Grid container spacing={1} className="halfcenter">
                 <Grid item xs={12} align="center">
-                    <Typography variant="h4" component="h4">
+                    <ThemeProvider theme={themex}>
+                    <Typography style={{color:"#5FBDB3"}} variant="h4" component="h4">
                         Join a Room
                     </Typography>
+                    </ThemeProvider>
                 </Grid>
                 <Grid item xs={12} align="center">
                     <TextField
@@ -63,12 +76,12 @@ function RoomJoinPage({navigation}) {
                         onChange={handleTextFieldChange}/>
                 </Grid>
                 <Grid item xs={12} align="center">
-                    <Button variant="contained" color="primary" onClick={roomButtonPressed}>
+                    <Button style={{width: screen.width, height: screen.height/10}} variant="contained" color="primary" onClick={roomButtonPressed} fullWidth={true}>
                         Enter Room
                     </Button>
                 </Grid>
                 <Grid item xs={12} align="center">
-                    <Button variant="contained" color="secondary" to="/" component={Link}>
+                    <Button style={{width: screen.width, height: screen.height/10}} variant="contained" color="secondary" to="/" component={Link}  fullWidth={true}>
                         Back
                     </Button>
                 </Grid>

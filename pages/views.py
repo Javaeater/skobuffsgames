@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import generics, status
@@ -7,8 +9,6 @@ from .serializers import CreateRoomSerializer
 from.serializers import FinalRoomSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from random import shuffle
-from english_words import english_words_set
 from random import seed
 from random import randint
 from itertools import permutations
@@ -95,17 +95,17 @@ class CreateRoomView(APIView):
     serializer_class = CreateRoomSerializer
 
     def createroom(self):
-        wdLst = ["dealing","aligned", "leading", "alerted", "altered", "related", "treadle", "allergy", "gallery", "largely", "regally", "aridest",
+        wdLst = ["dealing","aligned", "leading", "alerted", "related", "treadle", "allergy", "gallery", "largely", "regally", "aridest",
                  "astride", "staider", "tardies", "tirades", "aspired", "despair", "diapers", "praised", "astride", "staider", "tirades", "canters",
                  "nectars", "recants", "scanter", "trances", "capitol", "optical", "topical","catered","created","reacted","claimed","decimal",
                  "declaim","medical","darters","retards","starred","traders","dearths","hardest","hatreds","threads","trashed","demerit","merited",
                  "mitered","detains","instead","sainted","stained","earnest","eastern","nearest","enlarge","general","gleaner","esprits","persist"
             ,"spriest","sprites","stripes","lusters","results","rustles","observe","obverse","verbose","parsley","parleys","players","replays"
             ,"sparely","parties","pastier","pirates","traipse","potters","protest","spotter","present","repents","serpent","rattles","starlet"
-            ,"sstartle","realist","saltier","retails","recused","reduces","rescued","secured","repaint","painter","pertain","rosiest","sorties"
+            ,"startle","realist","saltier","retails","recused","reduces","rescued","secured","repaint","painter","pertain","rosiest","sorties"
             ,"stories","saltier","realist","retails"]
         seed()
-        l = randint(0,104)
+        l = randint(0,len(wdLst))
         return(wdLst[l])
 
     def allWords(self, wd):
@@ -113,6 +113,11 @@ class CreateRoomView(APIView):
         fl = []
         fz = []
         fw = ""
+        text_file = open("words.txt", "r")
+        data = text_file.read().replace("\n", ",")
+        text_file.close()
+        w_l = data.split(',')
+        sL = set(w_l)
         perm = permutations(wd, 3)
         fl3 = (list(perm))
         perm = permutations(wd, 4)
@@ -137,10 +142,20 @@ class CreateRoomView(APIView):
             fz.append(i)
         fz = [''.join(i) for i in fl]
         for i in fz:
-            if i in english_words_set:
+            if i in sL:
                 fw += i
                 fw+= ','
         return(fw)
+
+    def randomizeWord(self, wd):
+        fW = ""
+        lWord=[]
+        lWord[:0] = wd
+        random.shuffle(lWord)
+        for i in lWord:
+            fW += i
+
+        return fW
 
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
@@ -148,11 +163,12 @@ class CreateRoomView(APIView):
 
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            real_word = self.createroom()
             guest_can_play = serializer.data.get('guest_can_play')
             hidden_num = serializer.data.get('hidden_num')
-            ana_word = self.createroom()
+            ana_word = self.randomizeWord(real_word)
             is_host = self.request.session.session_key
-            all_words = self.allWords(ana_word)
+            all_words = self.allWords(real_word)
             points = serializer.data.get('points')
             queryset = Room.objects.filter(is_host=is_host)
             if queryset.exists():

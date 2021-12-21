@@ -12,6 +12,8 @@ import {
     FormControlLabel,
 } from '@material-ui/core'
 import {Link} from "react-router-dom"
+import {createTheme} from "@material-ui/core";
+import {ThemeProvider} from "@material-ui/core";
 
 function CreateRoomPage() {
     let defhiddenNum = 2
@@ -60,30 +62,71 @@ function CreateRoomPage() {
             })
         })
         const JsonFeedBack = await feedBack.json()
-        console.log(JsonFeedBack.all_words)
+        console.log(JsonFeedBack.ana_word)
         navigate("/room/" + JsonFeedBack.code)
     }
 
+    const themex = createTheme({
+        typography: {
+            fontFamily: ["Poppins", 'sans-serif'].join(','),
+            fontSize: screen.width/10
+
+        }
+    })
+
     return (
         <Grid container spacing={1}
-              className="center">
-            <Grid item xs={12} align="center"
-            >
-                <Typography component="h4" variant="h4"
-                >
-                    Create a room
+              className="halfcenter">
+
+            <Grid  item xs={12} align="center">
+                <ThemeProvider theme={themex}>
+                <Typography style={{color:"rgba(14, 192, 251, 0.43)"}} component="h3">
+                    Create a Room
                 </Typography>
+                </ThemeProvider>
             </Grid>
             <Grid item xs={12} align="center">
-                <FormControl
-                    component="fieldset"
+            </Grid>
+            <Grid
+                item
+                xs={12}
+                align="center"
+            >
+                <Button
+                    style={{width: screen.width, height: screen.height/10}}
+                    color="primary"
+                    variant="contained"
+                    onClick={
+                        handleRoomButtonPressed
+                    }
                 >
-                    <FormHelperText>
-                        <div align="center">
-                            Let's play Anograms
-                        </div>
-                    </FormHelperText>
-                    <RadioGroup
+                    Create A Room
+                </Button>
+            </Grid>
+            <Grid
+                item
+                xs={12}
+                align="center"
+                style={{color:'blue'}}
+            >
+                <Button
+                    style={{width: screen.width, height: screen.height/10}}
+                    color="secondary"
+                    variant="contained"
+                    to="/"
+                    component={Link}
+                >
+                    Back
+                </Button>
+            </Grid>
+
+        </Grid>
+
+    )
+}; export default CreateRoomPage
+
+/* code if radio group needs to come back
+<RadioGroup
                         row
                         defaultValue="true"
                         onChange={handleGuestCanPauseChange}
@@ -103,37 +146,4 @@ function CreateRoomPage() {
                                           labelPlacement="bottom"
                         />
                     </RadioGroup>
-                </FormControl>
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                align="center"
-            >
-                <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={
-                        handleRoomButtonPressed
-                    }
-                >
-                    Create A Room
-                </Button>
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                align="center"
-            >
-                <Button
-                    color="secondary"
-                    variant="contained"
-                    to="/"
-                    component={Link}
-                >
-                    Back
-                </Button>
-            </Grid>
-        </Grid>
-    )
-}; export default CreateRoomPage
+ */

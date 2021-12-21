@@ -7,10 +7,33 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import {useLocation} from "react-router-dom";
+import {useLayoutEffect} from "react";
+import {useRef} from "react";
+import {createTheme} from "@material-ui/core";
+import {ThemeProvider} from "@material-ui/core";
 
 
 function FinalRoom() {
     const navigate = useNavigate()
+    const [first,setFirst]= useState({
+        firstLoad: false
+    })
+
+    const firstUpdate = useRef(1);
+    useLayoutEffect(() => {
+        if (firstUpdate.current == 1) {
+            firstUpdate.current++;
+            return;
+        }
+
+        else if (firstUpdate.current == 2) {
+            firstUpdate.current++;
+            return;
+        }
+
+        console.log(firstUpdate.current);
+    });
+
     const [backData,setBackData]=useState({
         roomCode: useParams().roomCode
     })
@@ -22,7 +45,7 @@ function FinalRoom() {
         hiddenNumm: 3,
         isHost: false,
         points: 0,
-        totWord: " "
+        totWord: ""
     })
 
     let wordPair = backData2.totWord.split(',')
@@ -33,8 +56,7 @@ function FinalRoom() {
 
     }
     let uniqList = [...new Map(listObj.map(item => [item['word'], item])).values()]
-    console.log(uniqList)
-    const getRoomDetails=async()=> {
+    const getRoomDetails=()=> {
         fetch("/get-room" + "?code=" + backData.roomCode).then((response) => response.json()).then(data => {
             setBackData2({
                 guestCanPlay: data.guest_can_play,
@@ -54,23 +76,39 @@ function FinalRoom() {
         };
         fetch('/exit-room', requestOptions).then((_response) => {
             navigate('/')
+            location.reload();
         })
     }
 
+    const themex = createTheme({
+        typography: {
+            fontFamily: ["Poppins", 'sans-serif'].join(','),
+
+        }
+    })
+
     return (<Grid container spacing={1} className="center">
         <Grid item xs={12} align="center"
-        >
-            <Typography component="h4" variant="h4"
+        >   <ThemeProvider theme={themex}>
+            <Typography   style={{color:"#5FBDB3",fontSize: screen.width/10}} variant="h1"
             >
-                Total Points: {backData2.points}
+                Total Points {backData2.points}
+            </Typography>
+        </ThemeProvider>
+        </Grid>
+        <Grid item xs={12} align="center"
+        >
+            <Typography component="h6" variant="h6"
+            >
+                Words Found
             </Typography>
         </Grid>
         <Grid item xs={12} align="center">
-            <Box sx={{ width: '100%', height: 400, maxWidth: 100, bgcolor: 'background.paper', overflow: 'auto'}}>
+            <Box sx={{ height: 400,fontFamily: 'Raleway', width: screen.height/3,fontSize: screen.height/15, bgcolor: '#e5e5cd', overflow: 'auto', color: 'blk'}}>
                 <List dense={true}>
                     {uniqList.map(item => (
                         <ListItem key={item.word} align="center">
-                            <ListItemText primary={item.word} align="center"/>
+                            <ListItemText disableTypography primary={item.word} align="center"/>
                         </ListItem>
                     ))}
                 </List>
