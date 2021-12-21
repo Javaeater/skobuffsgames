@@ -10,8 +10,11 @@ const useStyles = makeStyles({
     buttonStep2: {
         width: screen.width/2,
         height: screen.height/1.123,
-        backgroundImage: 'linear-gradient(to bottom, #3772c9, #0094db, #00adb9, #00bd71, #8bc20f)'
-,
+        backgroundImage: 'linear-gradient(to bottom, #3772c9, #0094db, #00adb9, #00bd71, #8bc20f)',
+        '&:hover': {
+            backgroundImage: 'linear-gradient(to bottom, #638b84, #789c97, #8eada9, #a5bebc, #bccfce)',
+            color: 'rgba(233, 240, 242, 0.85)',
+        },
         color:'white',
         fontSize: screen.width/20
     },
@@ -20,6 +23,10 @@ const useStyles = makeStyles({
         height: screen.height/1.123,
         backgroundImage: 'linear-gradient(to top, #272f3e, #423863, #7b3272, #b71563, #e00b36)',
         color:'white',
+        '&:hover': {
+            backgroundImage: 'linear-gradient(to bottom, #638b84, #789c97, #8eada9, #a5bebc, #bccfce)',
+            color: 'rgba(233, 240, 242, 0.85)',
+        },
         fontSize: screen.width/20
     }
 
@@ -42,11 +49,11 @@ function anagramsHome(){
                 </ThemeProvider>
             </Grid>
             <Grid item xs={12}>
-                <ButtonGroup disableElevation varient="contained" color="primary">
+                <ButtonGroup  disableElevation varient="contained" color="primary">
 
-                </ButtonGroup>
                 <Button className={classes.buttonStep2} to='/join' component={Link}> Join a Room</Button>
                 <Button className={classes.buttonStep3} to='/create' component={Link}> Create a Room</Button>
+                </ButtonGroup>
             </Grid>
         </Grid>)
 

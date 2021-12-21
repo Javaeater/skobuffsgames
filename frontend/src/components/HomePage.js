@@ -20,7 +20,10 @@ const useStyles = makeStyles({
                 backgroundImage: 'url("static/images/anaphoto3.jpg")',
                 color:'#5FBDB3',
                 fontFamily: ['"Poppins", sans-serif'],
-                fontSize: screen.width/10
+                fontSize: screen.width/10,
+                '&:hover': {
+                    color: 'rgba(233, 240, 242, 0.85)',
+                },
             }
         });
 
